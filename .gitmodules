@@ -1,0 +1,3 @@
+[submodule "external/scattnlay"]
+	path = external/scattnlay
+	url = https://github.com/ovidiopr/scattnlay.git

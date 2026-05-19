@@ -2,8 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import PyMieScatt as ps
 
+
+C0 = 299_792_458.0
+RADIUS_M = 1.0
+FREQUENCY_START_HZ = 1e7
+FREQUENCY_STOP_HZ = 5e9
+FREQUENCY_POINTS = 800
+
 # 1. Target Geometry
-radius_m = 1.0
+radius_m = RADIUS_M
 diameter_nm = 2.0 * radius_m * 1e9  # PyMieScatt takes diameter!
 
 # 2. Emulate PEC in standard Mie Theory
@@ -12,8 +19,8 @@ m_pec = 1000 + 1000j
 
 # 3. Frequency Sweep: 10 MHz to 5 GHz
 # Using logspace to evenly distribute points across multiple decades
-freq_hz = np.logspace(7, np.log10(100e9), 800)
-wavelengths_m = 3e8 / freq_hz
+freq_hz = np.logspace(np.log10(FREQUENCY_START_HZ), np.log10(FREQUENCY_STOP_HZ), FREQUENCY_POINTS)
+wavelengths_m = C0 / freq_hz
 wavelengths_nm = wavelengths_m * 1e9
 
 # 4. Calculate Normalized RCS (Q_back)
@@ -40,11 +47,11 @@ ax1.grid(True, which="both", ls="--", alpha=0.6)
 # ka = 2 * pi * r / wavelength
 ax2 = ax1.twiny()
 ax2.set_xscale('log')
-ka_min = (2 * np.pi * radius_m) / (3e8 / 1e7)
-ka_max = (2 * np.pi * radius_m) / (3e8 / 5e9)
+ka_min = (2 * np.pi * radius_m) / (C0 / FREQUENCY_START_HZ)
+ka_max = (2 * np.pi * radius_m) / (C0 / FREQUENCY_STOP_HZ)
 ax2.set_xlim([ka_min, ka_max])
 ax2.set_xlabel(r"Electrical Size ($ka = 2\pi r / \lambda$)")
 
 plt.tight_layout()
-plt.savefig("PEC_Sphere_Validation.png", dpi=300)
+plt.savefig("PEC_Sphere_Validation_pymiescatt.png", dpi=300)
 plt.show()
